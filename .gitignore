@@ -6,6 +6,9 @@ dist/
 # Eval run logs
 data/runs.jsonl
 
+# Confidential profile data (kept locally, never committed)
+data/profiles.json
+
 # OTel exporter logs / temp
 *.log
 
