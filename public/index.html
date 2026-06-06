@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sampark Setu</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --panel: #161a22;
+        --panel-2: #1e2330;
+        --border: #262c3a;
+        --text: #e7ecf3;
+        --muted: #98a2b3;
+        --accent: #f5a623;
+        --accent-hover: #ffb84d;
+        --error: #ef4444;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, "Noto Sans Gujarati", "Noto Sans Devanagari",
+          sans-serif;
+      }
+      .wrap {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 32px 20px 80px;
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 22px;
+        letter-spacing: 0.2px;
+      }
+      p.subtitle {
+        margin: 0 0 24px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+      }
+      textarea, select, input[type="text"] {
+        width: 100%;
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        font: inherit;
+        outline: none;
+      }
+      textarea { min-height: 160px; resize: vertical; }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .row .field { flex: 1; min-width: 180px; }
+      button {
+        background: var(--accent);
+        color: #1c1300;
+        border: 0;
+        border-radius: 8px;
+        padding: 12px 22px;
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover { background: var(--accent-hover); }
+      button:disabled { opacity: 0.6; cursor: not-allowed; }
+      button.secondary {
+        background: transparent;
+        color: var(--error);
+        border: 1px solid var(--error);
+        margin-left: 8px;
+      }
+      button.secondary:hover { background: rgba(239, 68, 68, 0.12); }
+      .status {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 12px;
+        min-height: 18px;
+      }
+      .status .timer {
+        font-variant-numeric: tabular-nums;
+        color: var(--text);
+        margin-left: 6px;
+      }
+      .panel-block {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+        color: var(--muted);
+        background: #0b0d12;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        white-space: pre-wrap;
+        margin-top: 10px;
+      }
+      .events { max-height: 220px; overflow: auto; }
+      .thinking {
+        max-height: 240px;
+        overflow: auto;
+        color: #c8d0e0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .thinking .label,
+      .events .label {
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 8px;
+        display: block;
+      }
+      .briefing {
+        white-space: pre-wrap;
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 18px 20px;
+        line-height: 1.65;
+      }
+      .briefing:empty { display: none; }
+      .error {
+        color: var(--error);
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-top: 12px;
+      }
+      .footer-meta {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Sampark Setu</h1>
+      <p class="subtitle">
+        Pre-meeting briefing for karyakartas, grounded in Pujya Swamiji's Goshthi.
+      </p>
+
+      <div class="card">
+        <label for="message">Tell me about the person you're meeting</label>
+        <textarea
+          id="message"
+          placeholder="e.g. 17-year-old high schooler, very independent, argues with parents about everything. They're dragging him to satsang tonight. He thinks no one can tell him what's right for his life."
+        ></textarea>
+
+        <div class="row">
+          <div class="field">
+            <label for="language">Response language</label>
+            <select id="language">
+              <option value="english">English</option>
+              <option value="gujarati">Gujarati</option>
+              <option value="hindi">Hindi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="model">Model</label>
+            <select id="model">
+              <optgroup label="Anthropic">
+                <option value="claude-sonnet-4-6">Claude Sonnet 4.6 (default)</option>
+                <option value="claude-opus-4-8">Claude Opus 4.8</option>
+                <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
+              </optgroup>
+              <optgroup label="OpenAI">
+                <option value="gpt-5.5">GPT-5.5</option>
+                <option value="gpt-5.4-mini">GPT-5.4 mini</option>
+                <option value="o4-mini">o4-mini</option>
+              </optgroup>
+              <optgroup label="Google">
+                <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro</option>
+                <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+              </optgroup>
+            </select>
+          </div>
+          <div>
+            <button id="run">Generate briefing</button>
+            <button id="stop" class="secondary" hidden>Stop</button>
+          </div>
+        </div>
+
+        <div class="status" id="status">
+          <span id="statusText"></span>
+          <span class="timer" id="timer"></span>
+        </div>
+
+        <div class="panel-block thinking" id="thinking" hidden>
+          <span class="label">Agent reasoning</span><span id="thinkingBody"></span>
+        </div>
+
+        <div class="panel-block events" id="events" hidden>
+          <span class="label">Tool calls</span><span id="eventsBody"></span>
+        </div>
+      </div>
+
+      <div class="briefing" id="briefing"></div>
+      <div class="footer-meta" id="meta"></div>
+    </div>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const messageEl = $("message");
+      const langEl = $("language");
+      const modelEl = $("model");
+      const runBtn = $("run");
+      const stopBtn = $("stop");
+      const statusTextEl = $("statusText");
+      const timerEl = $("timer");
+      const eventsEl = $("events");
+      const eventsBodyEl = $("eventsBody");
+      const thinkingEl = $("thinking");
+      const thinkingBodyEl = $("thinkingBody");
+      const briefingEl = $("briefing");
+      const metaEl = $("meta");
+
+      let runStart = 0;
+      let timerHandle = null;
+      let abortController = null;
+      let stopped = false;
+
+      function appendEvent(line) {
+        eventsEl.hidden = false;
+        eventsBodyEl.textContent += "\n" + line;
+        eventsEl.scrollTop = eventsEl.scrollHeight;
+      }
+
+      function appendThinking(text) {
+        thinkingEl.hidden = false;
+        thinkingBodyEl.textContent += "\n" + text;
+        thinkingEl.scrollTop = thinkingEl.scrollHeight;
+      }
+
+      function fmtElapsed(ms) {
+        const s = Math.floor(ms / 1000);
+        const m = Math.floor(s / 60);
+        const r = s % 60;
+        return m > 0 ? `${m}m ${r}s` : `${s}s`;
+      }
+
+      function startTimer() {
+        runStart = performance.now();
+        timerEl.textContent = "0s";
+        timerHandle = setInterval(() => {
+          timerEl.textContent = fmtElapsed(performance.now() - runStart);
+        }, 1000);
+      }
+
+      function stopTimer() {
+        if (timerHandle) {
+          clearInterval(timerHandle);
+          timerHandle = null;
+        }
+      }
+
+      function reset() {
+        statusTextEl.textContent = "";
+        timerEl.textContent = "";
+        eventsBodyEl.textContent = "";
+        eventsEl.hidden = true;
+        thinkingBodyEl.textContent = "";
+        thinkingEl.hidden = true;
+        briefingEl.textContent = "";
+        metaEl.textContent = "";
+        document.querySelectorAll(".error").forEach((n) => n.remove());
+      }
+
+      function showError(msg) {
+        const div = document.createElement("div");
+        div.className = "error";
+        div.textContent = msg;
+        statusTextEl.parentElement.after(div);
+      }
+
+      runBtn.addEventListener("click", async () => {
+        const message = messageEl.value.trim();
+        if (!message) {
+          messageEl.focus();
+          return;
+        }
+        reset();
+        stopped = false;
+        runBtn.disabled = true;
+        stopBtn.hidden = false;
+        statusTextEl.textContent = "Connecting…";
+        startTimer();
+        const language = langEl.value;
+        const model = modelEl.value;
+        abortController = new AbortController();
+
+        try {
+          const res = await fetch("/api/brief", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ message, language, model }),
+            signal: abortController.signal,
+          });
+          if (!res.ok || !res.body) {
+            const text = await res.text().catch(() => "");
+            throw new Error(`HTTP ${res.status} ${text}`);
+          }
+
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buf = "";
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            let nl;
+            while ((nl = buf.indexOf("\n")) >= 0) {
+              const line = buf.slice(0, nl).trim();
+              buf = buf.slice(nl + 1);
+              if (!line) continue;
+              let event;
+              try {
+                event = JSON.parse(line);
+              } catch {
+                continue;
+              }
+              handle(event);
+            }
+          }
+        } catch (err) {
+          if (stopped || err?.name === "AbortError") {
+            statusTextEl.textContent = "Stopped.";
+          } else {
+            showError(String(err.message || err));
+          }
+        } finally {
+          stopTimer();
+          runBtn.disabled = false;
+          stopBtn.hidden = true;
+          abortController = null;
+        }
+      });
+
+      stopBtn.addEventListener("click", () => {
+        if (abortController) {
+          stopped = true;
+          abortController.abort();
+          statusTextEl.textContent = "Stopping…";
+        }
+      });
+
+      function handle(event) {
+        switch (event.type) {
+          case "start":
+            statusTextEl.textContent = "Agent thinking…";
+            break;
+          case "tool_use":
+            if (event.name === "listSermons") {
+              statusTextEl.textContent = "Listing sermons…";
+              appendEvent("[tool] listSermons()");
+            } else if (event.name === "readSermon") {
+              const f = event.input?.filename || "?";
+              statusTextEl.textContent = `Reading ${f}…`;
+              appendEvent(`[tool] readSermon(${f})`);
+            } else {
+              appendEvent(`[tool] ${event.name}`);
+            }
+            break;
+          case "tool_result":
+            appendEvent(`[ok]   ${event.name}${event.ok ? "" : "  (error)"}`);
+            break;
+          case "thinking":
+            statusTextEl.textContent = "Reasoning…";
+            appendThinking(event.text);
+            break;
+          case "heartbeat":
+            statusTextEl.textContent = `Thinking… (no output yet)`;
+            break;
+          case "text":
+            statusTextEl.textContent = "Writing briefing…";
+            briefingEl.textContent += event.text;
+            break;
+          case "result":
+            statusTextEl.textContent = "Done.";
+            metaEl.textContent =
+              `Server: ${fmtElapsed(event.duration_ms)} ` +
+              `· tokens in ${event.input_tokens} / out ${event.output_tokens}`;
+            break;
+          case "error":
+            showError(event.error);
+            break;
+        }
+      }
+    </script>
+  </body>
+</html>

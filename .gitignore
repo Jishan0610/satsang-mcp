@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.DS_Store
+
+# Eval run logs
+data/runs.jsonl
+
+# OTel exporter logs / temp
+*.log
+
+# Agent / IDE context and supporting docs (not part of the shipped repo)
+.claude/
+.cursor/
+CLAUDE.md
+sampark-setu-brief.md
+sampark-setu-brief.pdf
