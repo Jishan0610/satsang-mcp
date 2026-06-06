@@ -9,6 +9,9 @@ data/runs.jsonl
 # Confidential profile data (kept locally, never committed)
 data/profiles.json
 
+# Goshthi transcripts (kept locally, never committed)
+Ghostis/
+
 # OTel exporter logs / temp
 *.log
 
